@@ -15,6 +15,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include <string.h>
+#define BUFF_SIZE 1024
 
 typedef struct					s_bitmap
 {
@@ -48,7 +49,7 @@ int main(int ac, char **av)
 	int				fd_out;
 	int				i;
 	int				ret;
-	unsigned char	buff[255];
+	unsigned char	buff[BUFF_SIZE];
 	t_bitmap		header;
 
 	srand(time(NULL));
@@ -65,19 +66,30 @@ int main(int ac, char **av)
 		put_error("out.bmp");
 	memset(&header, 0, sizeof(t_bitmap));
 	ret = read(fd_in, &header, sizeof(t_bitmap));
+	if (header.signature != 19778)
+		printf("Attention, l'input n*est probablement pas un bmp\n");
 	write(fd_out, &header, sizeof(t_bitmap));
-	while ((ret = read(fd_in, buff, 255)))
+	while ((ret = read(fd_in, buff, BUFF_SIZE)))
 	{
-		if (rand() % 5)
+		i = 0;
+		while (i + 2 <= ret)
 		{
-			i = 0;
-			while (i < ret)
-			{
-				buff[i] %= (rand() % 10) + 1;
-				buff[i] -= 2;
-				i++;
-			}
+			buff[i] = buff[0];
+			buff[i + 1] = buff[1];
+			buff[i + 2] = buff[2];
+			i += 3;
 		}
+		// i = 0;
+		// while (i + 2 <= ret)
+		// {
+		// 	if (rand() % 10 == 0)
+		// 	{
+		// 		buff[i] = 255;
+		// 		buff[i + 1] = 255;
+		// 		buff[i + 2] = 255;
+		// 	}
+		// 	i += 3;
+		// }
 		write(fd_out, buff, ret);
 	}
 	close(fd_in);
