@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/07 16:45:41 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/07 18:01:17 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/09 14:37:50 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include <string.h>
-#define BUFF_SIZE 1024
+#define BUFF_SIZE 300
 
 typedef struct					s_bitmap
 {
@@ -67,29 +67,40 @@ int main(int ac, char **av)
 	memset(&header, 0, sizeof(t_bitmap));
 	ret = read(fd_in, &header, sizeof(t_bitmap));
 	if (header.signature != 19778)
-		printf("Attention, l'input n*est probablement pas un bmp\n");
+	{
+		printf("Attention, l'input n\'est probablement pas un bmp\n");
+		exit(1);
+	}
 	write(fd_out, &header, sizeof(t_bitmap));
 	while ((ret = read(fd_in, buff, BUFF_SIZE)))
 	{
+		/*Remplacement des pixels similaires, la valeur est modifiable ci-dessous*/
+		#define SIMIL 50
+		i = 0;
+		while (i + 5 <= ret)
+		{
+			if (abs(buff[i] - buff[i + 3]) < SIMIL &&
+			abs(buff[i + 1] - buff[i + 4]) < SIMIL &&
+			abs(buff[i + 2] - buff[i + 5]) < SIMIL)
+			{
+				buff[i]  = buff[0];
+				buff[i + 1] = buff[1];
+				buff[i + 2] = buff[2];
+			}
+			i += 3;
+		}
+		/*Generation de bruit aleatoire, la valeur de 100 est pour eviter le cote carnaval*/
 		i = 0;
 		while (i + 2 <= ret)
 		{
-			buff[i] = buff[0];
-			buff[i + 1] = buff[1];
-			buff[i + 2] = buff[2];
+			if (rand() % 5 == 0)
+			{
+				buff[i] = rand() % 100;
+				buff[i + 1] = rand() % 100;
+				buff[i + 2] = rand() % 100;
+			}
 			i += 3;
 		}
-		// i = 0;
-		// while (i + 2 <= ret)
-		// {
-		// 	if (rand() % 10 == 0)
-		// 	{
-		// 		buff[i] = 255;
-		// 		buff[i + 1] = 255;
-		// 		buff[i + 2] = 255;
-		// 	}
-		// 	i += 3;
-		// }
 		write(fd_out, buff, ret);
 	}
 	close(fd_in);
