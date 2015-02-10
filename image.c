@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/07 16:45:41 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/10 19:58:51 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/10 22:34:58 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,55 +40,138 @@ t_header	ft_check_header(const int fd_in, const int fd_out)
 unsigned char	*ft_get_data(const int fd_in, const t_header header)
 {
 	unsigned char	buff[BUFF_SIZE];
-	unsigned char	*copy;
+	unsigned char	*data;
 	int pos;
 	int ret;
-	int i;
 
-	copy = (unsigned char *)malloc(sizeof(unsigned char) * header.width * header.height * 3);
+	data = (unsigned char *)malloc(sizeof(unsigned char) * header.width * header.height * 3);
 	pos = 0;
 	srand(time(NULL));
 	while ((ret = read(fd_in, buff, BUFF_SIZE)))
 	{
-		/* Remplacement des pixels similaires, la valeur est modifiable ci-dessous */
-		#define SIMIL 50
-		i = 0;
-		while (i + 5 <= 300)
-		{
-			if (abs(buff[i] - buff[i + 3]) < SIMIL &&
-			abs(buff[i + 1] - buff[i + 4]) < SIMIL &&
-			abs(buff[i + 2] - buff[i + 5]) < SIMIL)
-			{
-				buff[i]  = buff[0];
-				buff[i + 1] = buff[1];
-				buff[i + 2] = buff[2];
-			}
-			i += 3;
-		}
-		/* Generation de bruit aleatoire, la valeur de 100 est pour eviter le cote carnaval */
-		i = 0;
-		while (i + 2 <= ret)
-		{
-			if (rand() % 10 == 0)
-			{
-				buff[i] = rand() % 100;
-				buff[i + 1] = rand() % 100;
-				buff[i + 2] = rand() % 100;
-			}
-			i += 3;
-		}
-		memcpy(copy + pos, buff, ret);
+		memcpy(data + pos, buff, ret);
 		pos += ret;
 	}
-	return (copy);
+	return (data);
+}
+
+void			ft_glitch(unsigned char **data, t_header header, int equiv_size, int equiv)
+{
+	unsigned char	*buff;
+	int				i;
+	int				tmp;
+	
+	buff = *data;
+
+	/* Remplacement des pixels similaires */
+	i = 0;
+	while (i < header.width * header.height * 3)
+	{
+		tmp = 0;
+		while (tmp + 5 <= equiv_size)
+		{
+			if (abs(buff[tmp + i] - buff[tmp + i + 3]) < equiv &&
+			abs(buff[tmp + i + 1] - buff[tmp + i + 4]) < equiv &&
+			abs(buff[tmp + i + 2] - buff[tmp + i + 5]) < equiv)
+			{
+				buff[tmp + i]  = buff[i + 0];
+				buff[tmp + i + 1] = buff[i + 1];
+				buff[tmp + i + 2] = buff[i + 2];
+			}
+			tmp += 3;
+		}
+		i += tmp;
+	}
+
+	/* Generation de bruit aleatoire, la valeur de 100 est pour eviter le cote carnaval */
+	i = 0;
+	while (i < header.width * header.height * 3)
+	{
+		if (rand() % 10 == 0)
+		{
+			buff[i] = rand() % 100;
+			buff[i + 1] = rand() % 100;
+			buff[i + 2] = rand() % 100;
+		}
+		i += 3;
+	}
+}
+
+void		data_to_img(unsigned char *data, t_env env, t_header header)
+{
+	char			*img_data;
+	int				bpx;
+	int				linesize;
+	int				endian;
+	int				i;
+	int				j;
+	int				k;
+	int				index;
+
+	if (env.img)
+	{
+		img_data = mlx_get_data_addr(env.img, &bpx, &linesize, &endian);
+		i = 0;
+		k = 0;
+		while ((int)i < header.height)
+		{
+			j = 0;
+			k = (i) * (header.width * 3);
+			while ((int)j < header.width)
+			{
+				index = i * linesize + ((j * bpx) >> 3);
+				img_data[index] = data[k++];
+				img_data[++index] = data[k++];
+				img_data[++index] = data[k++];
+				j++;
+			}
+			i++;
+		}
+	}
+}
+
+t_env		mlx_start(t_header header)
+{
+	t_env			env;
+
+	if ((env.mlx = mlx_init()) == NULL ||
+		(env.win = mlx_new_window(env.mlx,
+			header.width, header.height, "Propagande")) == NULL ||
+		(env.img = mlx_new_image(env.mlx, header.width, header.height)) == NULL)
+	{
+		printf("Probleme avec la libmlx\n");
+		exit (1);
+	}
+	return (env);
+}
+
+int				expose_hook(t_mlx *mlx)
+{
+	mlx_put_image_to_window(mlx->env.mlx, mlx->env.win, mlx->env.img, 0, 0);
+	return (0);
+}
+
+int				key_hook(int keycode, t_mlx *mlx)
+{
+	if (keycode == ECHAP)
+		exit(0);
+	// else if (keycode == DOWN)
+	// else if (keycode == UP)
+	// mlx_destroy_image(mlx->env.mlx, mlx->env.img);
+	// mlx->env.img = mlx_new_image(mlx->env.mlx, mlx->header.width, mlx->header.height);
+	expose_hook(mlx);
+	return (0);
 }
 
 int 		main(int ac, char **av)
 {
 	int				fd_in;
 	int				fd_out;
+	unsigned char	*data;
 	unsigned char	*copy;
+	t_mlx			mlx;
 	t_header		header;
+	t_env			env;
 
 	if (ac != 2)
 	{
@@ -102,45 +185,24 @@ int 		main(int ac, char **av)
 	if (fd_out == -1)
 		put_error("out.bmp");
 	header = ft_check_header(fd_in, fd_out);
-	copy = ft_get_data(fd_in, header);
-	void	*mlx;
-	void	*win;
-	void	*img;
+	data = ft_get_data(fd_in, header);
+	env = mlx_start(header);
+	mlx.env = env;
+	mlx.header = header;
 
-	mlx = mlx_init();
-	win = mlx_new_window(mlx, header.width, header.height, "Propagande");
-	img = mlx_new_image(mlx, header.width, header.height);
-	if (img)
-	{
-		char			*idatas;
-		int				bpx;
-		int				linesize;
-		int				indian;
-		int i;
-		int j;
-		int k;
-		int index;
-		idatas =  mlx_get_data_addr(img, &bpx, &linesize, &indian);
-		i = 0;
-		k = 0;
-		while ((int)i < header.height)
-		{
-			j = 0;
-			k = (i) * (header.width * 3);
-			while ((int)j < header.width)
-			{
-					index = i * linesize + ((j * bpx) >> 3);
-					idatas[index] = copy[k++];
-					idatas[++index] = copy[k++];
-					idatas[++index] = copy[k++];
-					j++;
-			}
-			i++;
-		}
-	}
-	mlx_put_image_to_window(mlx, win, img, 0, 0);
+
+	copy = (unsigned char *)malloc(sizeof(unsigned char) * header.width * header.height * 3);
+
+		copy = memcpy(copy, data, header.width * header.height * 3);
+		ft_glitch(&copy, header, 200, 20);
+		data_to_img(copy, env, header);
+		
 	write(fd_out, copy, header.width * header.height * 3);
-	mlx_loop(mlx);
+	mlx_key_hook(env.win, key_hook, &mlx);
+	mlx_expose_hook(env.win, expose_hook, &mlx);
+	mlx_loop(env.mlx);
+	free(copy);
+	free(data);
 	close(fd_in);
 	close(fd_out);
 	return 0;
