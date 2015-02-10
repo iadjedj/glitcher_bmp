@@ -6,86 +6,52 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/07 16:45:41 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/10 16:00:35 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/10 19:58:51 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <time.h>
-#include <string.h>
-#include <mlx.h>
-#define BUFF_SIZE 1024
+#include "image.h"
 
-#pragma pack(push, 1)
-typedef struct					s_bitmap
-{
-	short						signature;
-	int							size;
-	short						reserved1;
-	short						reserved2;
-	int							dataoffSet;
-	int							bitmapheadersize;
-	int							width;
-	int							height;
-	short						planes;
-	short						bitsperpixel;
-	int							compression;
-	int							sizeImage;
-	int							xpixelspremeter;
-	int							ypixelspremeter;
-	int							colorsused;
-	int							colorsimportant;
-}								t_bitmap;
-#pragma pack(pop)
-
-
-void	put_error(char *str)
+void		put_error(char *str)
 {
 	perror(str);
 	exit(1);
 }
 
-int main(int ac, char **av)
+t_header	ft_check_header(const int fd_in, const int fd_out)
 {
-	int				fd_in;
-	int				fd_out;
-	int				i;
-	int				ret;
-	int				pos;
+	t_header		header;
+
+	memset(&header, 0, sizeof(t_header));
+	read(fd_in, &header, sizeof(t_header));
+	if (header.signature != 0x4D42) // signature BMP
+	{
+		printf("Attention, l'input n\'est probablement pas un bmp\n");
+		close(fd_in);
+		close(fd_out);
+		exit(1);
+	}
+	write(fd_out, &header, sizeof(t_header)); /* Copie du Header dans le fichier output */
+	header.height = abs(header.height);
+	printf("Dimensions : %d*%d\n", header.width, header.height);
+	return (header);
+}
+
+unsigned char	*ft_get_data(const int fd_in, const t_header header)
+{
 	unsigned char	buff[BUFF_SIZE];
 	unsigned char	*copy;
-	t_bitmap		header;
+	int pos;
+	int ret;
+	int i;
 
-	srand(time(NULL));
-	if (ac != 2)
-	{
-		printf("Pas de fichier ou trop d'args\n");
-		exit(1);
-	}
-	fd_in = open(av[1], O_RDONLY);
-	if (fd_in == -1)
-		put_error(av[1]);
-	fd_out = open("out.bmp", O_CREAT | O_WRONLY | O_TRUNC, 0755);
-	if (fd_out == -1)
-		put_error("out.bmp");
-	memset(&header, 0, sizeof(t_bitmap));
-	ret = read(fd_in, &header, sizeof(t_bitmap));
-	if (header.signature != 0x4D42)
-	{
-		printf("%d\nAttention, l'input n\'est probablement pas un bmp\n", header.signature);
-		exit(1);
-	}
-	write(fd_out, &header, sizeof(t_bitmap));
-	header.height = abs(header.height);
-	printf("Lignes : %d \nColonnes : %d\n", header.width, header.height);
 	copy = (unsigned char *)malloc(sizeof(unsigned char) * header.width * header.height * 3);
 	pos = 0;
+	srand(time(NULL));
 	while ((ret = read(fd_in, buff, BUFF_SIZE)))
 	{
-		/*Remplacement des pixels similaires, la valeur est modifiable ci-dessous*/
-		#define SIMIL 10
+		/* Remplacement des pixels similaires, la valeur est modifiable ci-dessous */
+		#define SIMIL 50
 		i = 0;
 		while (i + 5 <= 300)
 		{
@@ -99,7 +65,7 @@ int main(int ac, char **av)
 			}
 			i += 3;
 		}
-		/*Generation de bruit aleatoire, la valeur de 100 est pour eviter le cote carnaval*/
+		/* Generation de bruit aleatoire, la valeur de 100 est pour eviter le cote carnaval */
 		i = 0;
 		while (i + 2 <= ret)
 		{
@@ -114,11 +80,32 @@ int main(int ac, char **av)
 		memcpy(copy + pos, buff, ret);
 		pos += ret;
 	}
+	return (copy);
+}
+
+int 		main(int ac, char **av)
+{
+	int				fd_in;
+	int				fd_out;
+	unsigned char	*copy;
+	t_header		header;
+
+	if (ac != 2)
+	{
+		printf("Pas de fichier ou trop d'args\n");
+		exit(1);
+	}
+	fd_in = open(av[1], O_RDONLY);
+	if (fd_in == -1)
+		put_error(av[1]);
+	fd_out = open("out.bmp", O_CREAT | O_WRONLY | O_TRUNC, 0755);
+	if (fd_out == -1)
+		put_error("out.bmp");
+	header = ft_check_header(fd_in, fd_out);
+	copy = ft_get_data(fd_in, header);
 	void	*mlx;
 	void	*win;
 	void	*img;
-	char	*img_ptr;
-	// int		depth, size_line, endian;
 
 	mlx = mlx_init();
 	win = mlx_new_window(mlx, header.width, header.height, "Propagande");
