@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/10 19:20:37 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/10 22:23:53 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/11 16:36:35 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@
 # define UP			65362
 # define RIGHT		65363
 # define DOWN		65364
+# define PLUS		65451
+# define MINUS		65453
+# define SPACE		32
 
 # pragma pack(push, 1)
 typedef struct					s_header
@@ -60,5 +63,15 @@ typedef struct 					s_mlx
 {
 	t_env						env;
 	t_header					header;
+	unsigned char				*source;
+	unsigned char				*copy;
+	int							fd_out;
 }								t_mlx;
+
+void			ft_glitch(t_mlx mlx, int equiv_size, int equiv, int noise);
+void			data_to_img(t_mlx mlx);
+unsigned char	*ft_get_data(const int fd_in, const t_header header);
+t_env			start_mlx(t_header header);
+int				expose_hook(t_mlx *mlx);
+int				key_hook(int keycode, t_mlx *mlx);
 #endif
