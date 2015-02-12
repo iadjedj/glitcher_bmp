@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/10 19:20:37 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/12 10:43:03 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/12 11:33:23 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,17 @@
 # include <time.h>
 # include <string.h>
 # include <mlx.h>
-# define BUFF_SIZE	1024
+# define FD_OUT_INIT	-42
+# define BUFF_SIZE		2048
 
-# define ECHAP		65307
-# define LEFT		65361
-# define UP			65362
-# define RIGHT		65363
-# define DOWN		65364
-# define PLUS		65451
-# define MINUS		65453
-# define SPACE		32
+# define ECHAP			65307
+# define LEFT			65361
+# define UP				65362
+# define RIGHT			65363
+# define DOWN			65364
+# define PLUS			65451
+# define MINUS			65453
+# define SPACE			32
 
 # pragma pack(push, 1)
 typedef struct					s_header
@@ -67,6 +68,7 @@ typedef struct 					s_glitch
 	unsigned char				*copy;
 	int							fd_in;
 	int							fd_out;
+	int							negative_height;
 }								t_glitch;
 
 void			ft_glitch(t_glitch glitch, int equiv_size, int equiv, int noise);

@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/07 16:45:41 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/12 10:48:56 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/12 11:19:24 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ unsigned char	*ft_get_data(const int fd_in, const t_header header)
 
 	data = (unsigned char *)malloc(sizeof(unsigned char) * header.width * header.height * 4);
 	pos = 0;
-	srand(time(NULL));
 	while ((ret = read(fd_in, buff, BUFF_SIZE)))
 	{
 		memcpy(data + pos, buff, ret);

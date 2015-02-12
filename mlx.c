@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/11 16:34:02 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/12 10:45:16 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/12 11:36:56 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,12 +69,16 @@ int				key_hook(int keycode, t_glitch *glitch)
 	}
 	else if (keycode == SPACE)
 	{
-		if (glitch->fd_out == -42)
+		if (glitch->fd_out == FD_OUT_INIT)
 		{
 			glitch->fd_out = open("out.bmp", O_CREAT | O_WRONLY | O_TRUNC, 0755);
 			if (glitch->fd_out == -1)
 				put_error_and_exit("out.bmp");
-			write(glitch->fd_out, &(glitch->header), sizeof(t_header)); /* Copie du Header dans le fichier output */
+			/* Si dans le header d'origine height etait negatif, le remettre a sa valeur originale avant la copie*/
+			glitch->header.height *= glitch->negative_height;
+			/* Copie du Header dans le fichier output */
+			write(glitch->fd_out, &(glitch->header), sizeof(t_header));
+			glitch->header.height *= glitch->negative_height;
 		}
 		lseek(glitch->fd_out, glitch->header.dataoffSet, SEEK_SET);
 		tmp = glitch->header.width * glitch->header.height * 3;

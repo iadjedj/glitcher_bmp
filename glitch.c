@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/11 16:37:02 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/12 10:35:55 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/12 11:38:05 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void			ft_glitch(t_glitch glitch, int equiv_size, int equiv, int noise)
 			abs(data[tmp + i + 1] - data[tmp + i + 4]) < equiv &&
 			abs(data[tmp + i + 2] - data[tmp + i + 5]) < equiv)
 			{
-				data[tmp + i]  = data[i + 0] + (rand() % 20);
+				data[tmp + i] = data[i + 0] + (rand() % 20);
 				data[tmp + i + 1] = data[i + 1] + (rand() % 20);
 				data[tmp + i + 2] = data[i + 2] + (rand() % 20);
 			}
