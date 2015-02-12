@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/11 16:34:02 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/11 17:33:12 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/12 10:45:16 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,19 @@ t_env			start_mlx(t_header header)
 			header.width, header.height, "Propagande")) == NULL ||
 		(env.img = mlx_new_image(env.mlx, header.width, header.height)) == NULL)
 	{
-		printf("Probleme avec la libmlx\n");
+		printf("Probleme avec la minilibx\n");
 		exit (1);
 	}
 	return (env);
 }
 
-int				expose_hook(t_mlx *mlx)
+int				expose_hook(t_glitch *glitch)
 {
-	mlx_put_image_to_window(mlx->env.mlx, mlx->env.win, mlx->env.img, 0, 0);
+	mlx_put_image_to_window(glitch->env.mlx, glitch->env.win, glitch->env.img, 0, 0);
 	return (0);
 }
 
-int				key_hook(int keycode, t_mlx *mlx)
+int				key_hook(int keycode, t_glitch *glitch)
 {
 	static int	equiv_size = 5;
 	static int	equiv = 15;
@@ -41,7 +41,7 @@ int				key_hook(int keycode, t_mlx *mlx)
 	int			tmp;
 
 	if (keycode == ECHAP)
-		exit(0);
+		clean_exit(glitch);
 	else if (keycode != DOWN && keycode != UP && keycode != LEFT && keycode != RIGHT &&
 			keycode != PLUS && keycode != MINUS && keycode != SPACE)
 		return (1);
@@ -53,7 +53,7 @@ int				key_hook(int keycode, t_mlx *mlx)
 	}
 	else if (keycode == DOWN || keycode == UP)
 	{
-		equiv += (keycode == DOWN) ? 5 : -5;
+		equiv += (keycode == DOWN) ? 3 : -3;
 		if (equiv < 0)
 			equiv = 0;
 		else if (equiv > 170)
@@ -69,26 +69,28 @@ int				key_hook(int keycode, t_mlx *mlx)
 	}
 	else if (keycode == SPACE)
 	{
-		tmp = mlx->header.width * mlx->header.height * 3;
-		lseek(mlx->fd_out, mlx->header.dataoffSet, SEEK_SET);
-		if (write(mlx->fd_out, mlx->copy, tmp) == tmp)
+		if (glitch->fd_out == -42)
 		{
-			mlx_string_put(mlx->env.mlx, mlx->env.win, 15, 15, 0xFFFFFF, "File Saved");
-			printf("File Saved\n");
+			glitch->fd_out = open("out.bmp", O_CREAT | O_WRONLY | O_TRUNC, 0755);
+			if (glitch->fd_out == -1)
+				put_error_and_exit("out.bmp");
+			write(glitch->fd_out, &(glitch->header), sizeof(t_header)); /* Copie du Header dans le fichier output */
 		}
-		else
+		lseek(glitch->fd_out, glitch->header.dataoffSet, SEEK_SET);
+		tmp = glitch->header.width * glitch->header.height * 3;
+		if (write(glitch->fd_out, glitch->copy, tmp) == tmp)
 		{
-			mlx_string_put(mlx->env.mlx, mlx->env.win, 15, 15, 0xFF0000, "Error saving");
-			printf("Error saving\n");
+			mlx_string_put(glitch->env.mlx, glitch->env.win, 15, 15, 0xFFFFFF, "File Saved");
+			printf("File Saved\n");
 		}
 		return (0);
 	}
-	mlx->copy = memcpy(mlx->copy, mlx->source, mlx->header.width * mlx->header.height * 4);
-	ft_glitch(*mlx, equiv_size, equiv, noise);
-	mlx_destroy_image(mlx->env.mlx, mlx->env.img);
-	mlx->env.img = mlx_new_image(mlx->env.mlx, mlx->header.width, mlx->header.height);
-	data_to_img(*mlx);
-	mlx_put_image_to_window(mlx->env.mlx, mlx->env.win, mlx->env.img, 0, 0);
+	glitch->copy = memcpy(glitch->copy, glitch->source, glitch->header.width * glitch->header.height * 4);
+	ft_glitch(*glitch, equiv_size, equiv, noise);
+	mlx_destroy_image(glitch->env.mlx, glitch->env.img);
+	glitch->env.img = mlx_new_image(glitch->env.mlx, glitch->header.width, glitch->header.height);
+	data_to_img(*glitch);
+	mlx_put_image_to_window(glitch->env.mlx, glitch->env.win, glitch->env.img, 0, 0);
 	printf("equiv_size : %d\t\tequiv : %d\tnoise : %d\n", equiv_size, equiv, noise);
 	return (0);
 }

@@ -1,16 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   image.c                                            :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/07 16:45:41 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/11 16:37:53 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/12 10:48:56 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "image.h"
+
+void			put_error_and_exit(char *str)
+{
+	perror(str);
+	exit(1);
+}
+
+void			clean_exit(t_glitch *glitch)
+{
+	free(glitch->source);
+	free(glitch->copy);
+	close(glitch->fd_in);
+	close(glitch->fd_out);
+	exit(0);
+}
 
 unsigned char	*ft_get_data(const int fd_in, const t_header header)
 {
@@ -30,7 +45,7 @@ unsigned char	*ft_get_data(const int fd_in, const t_header header)
 	return (data);
 }
 
-void			data_to_img(t_mlx mlx)
+void			data_to_img(t_glitch glitch)
 {
 	char			*img_data;
 	int				bpx;
@@ -41,21 +56,21 @@ void			data_to_img(t_mlx mlx)
 	int				k;
 	int				index;
 
-	if (mlx.env.img)
+	if (glitch.env.img)
 	{
-		img_data = mlx_get_data_addr(mlx.env.img, &bpx, &linesize, &endian);
+		img_data = mlx_get_data_addr(glitch.env.img, &bpx, &linesize, &endian);
 		i = 0;
 		k = 0;
-		while ((int)i < mlx.header.height)
+		while ((int)i < glitch.header.height)
 		{
 			j = 0;
-			k = (i) * (mlx.header.width * 3);
-			while ((int)j < mlx.header.width)
+			k = (i) * (glitch.header.width * 3);
+			while ((int)j < glitch.header.width)
 			{
 				index = i * linesize + ((j * bpx) >> 3);
-				img_data[index] = mlx.copy[k++];
-				img_data[++index] = mlx.copy[k++];
-				img_data[++index] = mlx.copy[k++];
+				img_data[index] = glitch.copy[k++];
+				img_data[++index] = glitch.copy[k++];
+				img_data[++index] = glitch.copy[k++];
 				j++;
 			}
 			i++;

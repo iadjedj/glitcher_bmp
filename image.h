@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/10 19:20:37 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/11 16:36:35 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/12 10:43:03 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,19 +59,22 @@ typedef struct					s_env
 	void						*img;
 }								t_env;
 
-typedef struct 					s_mlx
+typedef struct 					s_glitch
 {
 	t_env						env;
 	t_header					header;
 	unsigned char				*source;
 	unsigned char				*copy;
+	int							fd_in;
 	int							fd_out;
-}								t_mlx;
+}								t_glitch;
 
-void			ft_glitch(t_mlx mlx, int equiv_size, int equiv, int noise);
-void			data_to_img(t_mlx mlx);
+void			ft_glitch(t_glitch glitch, int equiv_size, int equiv, int noise);
+void			data_to_img(t_glitch glitch);
 unsigned char	*ft_get_data(const int fd_in, const t_header header);
 t_env			start_mlx(t_header header);
-int				expose_hook(t_mlx *mlx);
-int				key_hook(int keycode, t_mlx *mlx);
+int				expose_hook(t_glitch *glitch);
+int				key_hook(int keycode, t_glitch *glitch);
+void			put_error_and_exit(char *str);
+void			clean_exit(t_glitch *glitch);
 #endif

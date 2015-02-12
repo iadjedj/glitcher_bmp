@@ -6,22 +6,22 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/11 16:37:02 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/11 18:38:51 by jlelez           ###   ########.fr       */
+/*   Updated: 2015/02/12 10:35:55 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "image.h"
 
-void			ft_glitch(t_mlx mlx, int equiv_size, int equiv, int noise)
+void			ft_glitch(t_glitch glitch, int equiv_size, int equiv, int noise)
 {
 	unsigned char	*data;
 	int				i;
 	int				tmp;
 
-	data = mlx.copy;
+	data = glitch.copy;
 	/* Remplacement des pixels similaires */
 	i = 0;
-	while (i < mlx.header.width * mlx.header.height * 3)
+	while (i < glitch.header.width * glitch.header.height * 3)
 	{
 		tmp = 0;
 		while (tmp + 5 <= equiv_size)
@@ -39,9 +39,9 @@ void			ft_glitch(t_mlx mlx, int equiv_size, int equiv, int noise)
 		i += tmp;
 	}
 
-	/* Generation de bruit aleatoire, la valeur de 150 est pour eviter le cote carnaval */
+	/* Generation de bruit aleatoire, la valeur de 150 est pour eviter les couleurs trop criardes */
 	i = 0;
-	while (i < mlx.header.width * mlx.header.height * 3)
+	while (i < glitch.header.width * glitch.header.height * 3)
 	{
 		if (rand() % 100 < noise)
 		{
