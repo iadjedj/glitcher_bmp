@@ -20,7 +20,13 @@ void		ft_get_header(t_glitch *glitch)
 	read(glitch->fd_in, &header, sizeof(t_header));
 	if (header.signature != 0x4D42) // signature BMP
 	{
-		printf("Attention, l'input n\'est probablement pas un bmp\n");
+		printf("Not a BMP file\n");
+		close(glitch->fd_in);
+		exit(1);
+	}
+	else if (header.bitsperpixel != 24)
+	{
+		printf("This program only supports 24bits bitmaps\n");
 		close(glitch->fd_in);
 		exit(1);
 	}

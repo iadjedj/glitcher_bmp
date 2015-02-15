@@ -37,7 +37,6 @@ int				mouse_hook(int button, int x, int y, t_glitch *glitch)
 {
 	if (button != 1)
 		return (1);
-	// glitch->copy = memcpy(glitch->copy, glitch->source, glitch->header.width * glitch->header.height * 4);
 	ft_wand(*glitch, x, y);
 	// mlx_destroy_image(glitch->env.mlx, glitch->env.img);
 	glitch->env.img = mlx_new_image(glitch->env.mlx, glitch->header.width, glitch->header.height);
