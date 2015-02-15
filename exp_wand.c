@@ -68,6 +68,7 @@ void			ft_wand(t_glitch glitch, int x, int y)
 
 	size = glitch.header.width * glitch.header.height * 3;
 	data = glitch.copy;
+	y = (glitch.negative_height == -1) ? y : glitch.header.height - 1 - y;
 	/*Le random permet a l'algo de remplacer le pixel de départ qui est du coup different de la couleur de départ*/
 	start.B = (data[3 * ((y * glitch.header.width) + x) + 0] + (rand() % 5)) % 255;
 	start.G = (data[3 * ((y * glitch.header.width) + x) + 1] + (rand() % 5)) % 255;

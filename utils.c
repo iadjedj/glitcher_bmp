@@ -63,7 +63,7 @@ void			data_to_img(t_glitch glitch)
 		while ((int)i < glitch.header.height)
 		{
 			j = 0;
-			k = (i) * (glitch.header.width * 3);
+			k = ((glitch.negative_height == -1) ? i : (glitch.header.height - 1 - i)) * (glitch.header.width * 3);
 			while ((int)j < glitch.header.width)
 			{
 				index = i * linesize + ((j * bpx) >> 3);
