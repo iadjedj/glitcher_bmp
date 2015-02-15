@@ -60,6 +60,7 @@ int 		main(int ac, char **av)
 	/* pour gerer le repeat sur les touches*/
 	// mlx_hook(glitch.env.win, 2, (1L << 0), key_hook, &glitch);
 	mlx_key_hook(glitch.env.win, key_hook, &glitch);
+	mlx_mouse_hook(glitch.env.win, mouse_hook, &glitch);
 	mlx_expose_hook(glitch.env.win, expose_hook, &glitch);
 	mlx_loop(glitch.env.mlx);
 	free(glitch.copy);

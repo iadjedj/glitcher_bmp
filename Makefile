@@ -12,7 +12,7 @@
 
 NAME	=	propagande_img
 
-SRCS	= 	utils.c mlx.c main.c glitch.c
+SRCS	= 	utils.c mlx.c main.c glitch.c exp_wand.c
 
 OBJS	=	$(SRCS:.c=.o)
 

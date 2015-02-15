@@ -30,9 +30,9 @@ void			ft_glitch(t_glitch glitch, int equiv_size, int equiv, int noise)
 			abs(data[tmp + i + 1] - data[tmp + i + 4]) < equiv &&
 			abs(data[tmp + i + 2] - data[tmp + i + 5]) < equiv)
 			{
-				data[tmp + i] = data[i + 0] + (rand() % 20);
-				data[tmp + i + 1] = data[i + 1] + (rand() % 20);
-				data[tmp + i + 2] = data[i + 2] + (rand() % 20);
+				data[tmp + i] = data[i + 0];
+				data[tmp + i + 1] = data[i + 1];
+				data[tmp + i + 2] = data[i + 2];
 			}
 			tmp += 3;
 		}

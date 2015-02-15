@@ -17,6 +17,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
+# include <math.h>
 # include <time.h>
 # include <string.h>
 # include <mlx.h>
@@ -71,12 +72,21 @@ typedef struct 					s_glitch
 	int							negative_height;
 }								t_glitch;
 
+typedef struct					s_rgb
+{
+	unsigned char				R;
+	unsigned char				G;
+	unsigned char				B;
+}								t_rgb;
+
 void			ft_glitch(t_glitch glitch, int equiv_size, int equiv, int noise);
+void			ft_wand(t_glitch glitch, int x, int y);
 void			data_to_img(t_glitch glitch);
 unsigned char	*ft_get_data(const int fd_in, const t_header header);
 t_env			start_mlx(t_header header);
 int				expose_hook(t_glitch *glitch);
 int				key_hook(int keycode, t_glitch *glitch);
+int				mouse_hook(int button, int x, int y, t_glitch *glitch);
 void			put_error_and_exit(char *str);
 void			clean_exit(t_glitch *glitch);
 #endif
