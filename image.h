@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/10 19:20:37 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/12 11:33:23 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/16 17:55:37 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <time.h>
 # include <string.h>
 # include <mlx.h>
+# include <pthread.h>
 # define FD_OUT_INIT	-42
 # define BUFF_SIZE		2048
 
@@ -78,6 +79,15 @@ typedef struct					s_rgb
 	unsigned char				G;
 	unsigned char				B;
 }								t_rgb;
+
+typedef struct					s_thread
+{
+	t_glitch					*glitch;
+	int							x;
+	int							y;
+	int							size;
+	t_rgb						*start;
+}								t_thread;
 
 void			ft_glitch(t_glitch glitch, int equiv_size, int equiv, int noise);
 void			ft_wand(t_glitch glitch, int x, int y);

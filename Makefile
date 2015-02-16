@@ -6,7 +6,7 @@
 #    By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/01/21 13:29:21 by iadjedj           #+#    #+#              #
-#    Updated: 2015/02/12 10:31:45 by iadjedj          ###   ########.fr        #
+#    Updated: 2015/02/16 17:56:25 by iadjedj          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,10 +19,10 @@ OBJS	=	$(SRCS:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	gcc -Wall -Wextra -Werror -lmlx -L/usr/X11/lib -lXext -lX11 -o $(NAME) $(OBJS)
+	gcc -O2 -Wall -Wextra -Werror -pthread -lmlx -L/usr/X11/lib -lXext -lX11 -o $(NAME) $(OBJS)
 
 $(OBJS): %.o: %.c
-	gcc -Wall -Wextra -Werror -I libft -L libft -lft -c $<
+	gcc -O2 -Wall -Wextra -Werror -I libft -pthread -L libft -lft -c $<
 
 clean:
 	rm -f $(OBJS)

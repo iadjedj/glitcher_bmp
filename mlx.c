@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/11 16:34:02 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/12 11:36:56 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/16 17:59:18 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,18 @@ int				expose_hook(t_glitch *glitch)
 
 int				mouse_hook(int button, int x, int y, t_glitch *glitch)
 {
+	// static int test = 30;
+	// if (button == 4 || button == 5)
+	// {
+	// 	 test += (button == 4) ? -1 : 1;
+	// 	 printf("test : %d\n", test);
+	// }
 	if (button != 1)
+	{
 		return (1);
+	}
 	ft_wand(*glitch, x, y);
-	// mlx_destroy_image(glitch->env.mlx, glitch->env.img);
+	mlx_destroy_image(glitch->env.mlx, glitch->env.img);
 	glitch->env.img = mlx_new_image(glitch->env.mlx, glitch->header.width, glitch->header.height);
 	data_to_img(*glitch);
 	mlx_put_image_to_window(glitch->env.mlx, glitch->env.win, glitch->env.img, 0, 0);
@@ -103,7 +111,7 @@ int				key_hook(int keycode, t_glitch *glitch)
 	}
 	glitch->copy = memcpy(glitch->copy, glitch->source, glitch->header.width * glitch->header.height * 4);
 	ft_glitch(*glitch, equiv_size, equiv, noise);
-	// mlx_destroy_image(glitch->env.mlx, glitch->env.img);
+	mlx_destroy_image(glitch->env.mlx, glitch->env.img);
 	glitch->env.img = mlx_new_image(glitch->env.mlx, glitch->header.width, glitch->header.height);
 	data_to_img(*glitch);
 	mlx_put_image_to_window(glitch->env.mlx, glitch->env.win, glitch->env.img, 0, 0);
