@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/11 16:33:08 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/17 12:43:41 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/17 13:08:12 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,9 @@ int 		main(int ac, char **av)
 	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 90, 0xFFFFFF, "Mouse Left :    Start replacement algorithm");
 	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 105, 0xFFFFFF,"Mouse Wheel :   Change replacement algorithm sensitivity");
 	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 130, 0xFFFFFF,"+/- :           Noise Level");
-	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 150, 0xFFFFFF,"Space :         Save Image");
-	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 165, 0xFFFFFF,"Echap :         Exit");
+	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 155, 0xFFFFFF,"Zero :          Reset glitcher");
+	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 175, 0xFFFFFF,"Space :         Save Image");
+	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 190, 0xFFFFFF,"Echap :         Exit");
 	sleep(2);
 
 	/* pour gerer le repeat sur les touches*/
