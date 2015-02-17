@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/11 16:37:02 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/17 12:33:17 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/17 14:09:49 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void			magic_wand(t_glitch glitch, int x, int y, int accuracy)
 	p_data.accuracy = accuracy;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-	err = pthread_attr_setstacksize(&attr, 4096 * 10000);
+	err = pthread_attr_setstacksize(&attr, 4096 * 20000);
 	if (err != 0)
 		printf("Error setting stacksize\n");
 	err = pthread_create(&threads[0], &attr, launch_recurs, &p_data);
