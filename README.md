@@ -9,8 +9,7 @@ Le programme lit uniquement les BMP 24 bits.
 
 Exemple de rendu visible a <a href="http://imgur.com/a/1uPbB">cette adresse</a>
 <br/>
-<br/>
-<br/>
+Autre partie du projet concernant le texte : https://github.com/iadjedj/projet_propagande
 <br/>
 ### Utilisation
 * **Up/Down** :		Glitch strength
