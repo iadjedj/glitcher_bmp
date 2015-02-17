@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/11 16:33:08 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/12 11:33:32 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/17 12:43:41 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ int 		main(int ac, char **av)
 	if (glitch.fd_in == -1)
 		put_error_and_exit(av[1]);
 	glitch.fd_out = FD_OUT_INIT;
+	glitch.file_name = strndup(av[1], strlen(av[1]) - strlen(strrchr(av[1], '.')));
 	ft_get_header(&glitch);
 	glitch.source = ft_get_data(glitch.fd_in, glitch.header);
 	glitch.env = start_mlx(glitch.header);
@@ -56,11 +57,13 @@ int 		main(int ac, char **av)
 	memcpy(glitch.copy, glitch.source, glitch.header.width * glitch.header.height * 4);
 	data_to_img(glitch);
 	mlx_string_put(glitch.env.mlx, glitch.env.win, 20, 20, 0xC73920, "Propagande pour un monde meilleur (Collaboration 42 / Penninghen)");
-	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 45, 0x999999, "Up/Down :       Glitch strength");
-	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 65, 0x999999, "Left/Right :    Glitch size");
-	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 85, 0x999999, "+/- :           Noise Level");
-	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 105, 0x999999, "Space :         Save Image");
-	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 125, 0x999999, "Echap :         Exit");
+	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 45, 0xFFFFFF, "Up/Down :       Glitch strength");
+	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 60, 0xFFFFFF, "Left/Right :    Glitch size");
+	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 90, 0xFFFFFF, "Mouse Left :    Start replacement algorithm");
+	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 105, 0xFFFFFF,"Mouse Wheel :   Change replacement algorithm sensitivity");
+	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 130, 0xFFFFFF,"+/- :           Noise Level");
+	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 150, 0xFFFFFF,"Space :         Save Image");
+	mlx_string_put(glitch.env.mlx, glitch.env.win, 40, 165, 0xFFFFFF,"Echap :         Exit");
 	sleep(2);
 
 	/* pour gerer le repeat sur les touches*/

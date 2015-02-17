@@ -6,13 +6,13 @@
 #    By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/01/21 13:29:21 by iadjedj           #+#    #+#              #
-#    Updated: 2015/02/16 17:56:25 by iadjedj          ###   ########.fr        #
+#    Updated: 2015/02/17 12:17:00 by iadjedj          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	=	propagande_img
 
-SRCS	= 	utils.c mlx.c main.c glitch.c exp_wand.c
+SRCS	= 	main.c mlx.c utils.c glitch.c magic_wand.c data_parsing.c
 
 OBJS	=	$(SRCS:.c=.o)
 

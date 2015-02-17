@@ -6,7 +6,7 @@
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/10 19:20:37 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/16 17:55:37 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/17 12:58:18 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 # define PLUS			65451
 # define MINUS			65453
 # define SPACE			32
+# define ZERO			65456
 
 # pragma pack(push, 1)
 typedef struct					s_header
@@ -71,6 +72,7 @@ typedef struct 					s_glitch
 	int							fd_in;
 	int							fd_out;
 	int							negative_height;
+	char						*file_name;
 }								t_glitch;
 
 typedef struct					s_rgb
@@ -87,16 +89,20 @@ typedef struct					s_thread
 	int							y;
 	int							size;
 	t_rgb						*start;
+	int							accuracy;
 }								t_thread;
 
 void			ft_glitch(t_glitch glitch, int equiv_size, int equiv, int noise);
-void			ft_wand(t_glitch glitch, int x, int y);
+void			magic_wand(t_glitch glitch, int x, int y, int accuracy);
 void			data_to_img(t_glitch glitch);
 unsigned char	*ft_get_data(const int fd_in, const t_header header);
 t_env			start_mlx(t_header header);
 int				expose_hook(t_glitch *glitch);
 int				key_hook(int keycode, t_glitch *glitch);
 int				mouse_hook(int button, int x, int y, t_glitch *glitch);
+char			*ft_itoa(int n);
+char			*ft_strnew(size_t size);
+char			*get_file_to_write(t_glitch *glitch);
 void			put_error_and_exit(char *str);
 void			clean_exit(t_glitch *glitch);
 #endif

@@ -5,12 +5,70 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/02/07 16:45:41 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/12 11:19:24 by iadjedj          ###   ########.fr       */
+/*   Created: 2014/11/10 13:36:29 by iadjedj           #+#    #+#             */
+/*   Updated: 2015/02/17 12:51:01 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "image.h"
+
+char			*ft_strnew(size_t size)
+{
+	char			*new;
+	unsigned int	i;
+
+	i = 0;
+	if ((new = (char *)malloc(size + 1 * sizeof(new))) == NULL)
+		return (NULL);
+	while (i <= size + 1)
+	{
+		new[i] = '\0';
+		i++;
+	}
+	return (new);
+}
+
+static int		ft_itoa_size(int n)
+{
+	int		size;
+
+	size = 0;
+	while (n != 0)
+	{
+		n = n / 10;
+		size++;
+	}
+	return (size);
+}
+
+char			*ft_itoa(int n)
+{
+	char	*str;
+	int		i;
+	int		len;
+
+	str = ft_strnew(11);
+	i = 0;
+	len = ft_itoa_size(n);
+	if (n == -2147483648)
+		str = strcpy(str, "-2147483648");
+	if (n < 0 && n != -2147483648)
+	{
+		str[i] = '-';
+		n = -n;
+		len++;
+	}
+	while (n >= 10)
+	{
+		str[len - i - 1] = n % 10 + '0';
+		n /= 10;
+		i++;
+	}
+	if (n < 10 && n != -2147483648)
+		(str[0] != '-') ? (str[0] = n + '0') :
+		(str[1] = n + '0');
+	return (str);
+}
 
 void			put_error_and_exit(char *str)
 {
@@ -27,52 +85,18 @@ void			clean_exit(t_glitch *glitch)
 	exit(0);
 }
 
-unsigned char	*ft_get_data(const int fd_in, const t_header header)
+char			*get_file_to_write(t_glitch *glitch)
 {
-	unsigned char	buff[BUFF_SIZE];
-	unsigned char	*data;
-	int				pos;
-	int				ret;
+	int		i;
+	char	*file;
 
-	data = (unsigned char *)malloc(sizeof(unsigned char) * header.width * header.height * 4);
-	pos = 0;
-	while ((ret = read(fd_in, buff, BUFF_SIZE)))
+	i = 1;
+	file = ft_strnew(100);
+	snprintf(file, 100, "%s_glitch%02d.bmp", glitch->file_name, 0);
+	while (access(file, F_OK) != -1)
 	{
-		memcpy(data + pos, buff, ret);
-		pos += ret;
+		snprintf(file, 100, "%s_glitch%02d.bmp", glitch->file_name, i);
+		i++;
 	}
-	return (data);
-}
-
-void			data_to_img(t_glitch glitch)
-{
-	char			*img_data;
-	int				bpx;
-	int				linesize;
-	int				endian;
-	int				i;
-	int				j;
-	int				k;
-	int				index;
-
-	if (glitch.env.img)
-	{
-		img_data = mlx_get_data_addr(glitch.env.img, &bpx, &linesize, &endian);
-		i = 0;
-		k = 0;
-		while ((int)i < glitch.header.height)
-		{
-			j = 0;
-			k = ((glitch.negative_height == -1) ? i : (glitch.header.height - 1 - i)) * (glitch.header.width * 3);
-			while ((int)j < glitch.header.width)
-			{
-				index = i * linesize + ((j * bpx) >> 3);
-				img_data[index] = glitch.copy[k++];
-				img_data[++index] = glitch.copy[k++];
-				img_data[++index] = glitch.copy[k++];
-				j++;
-			}
-			i++;
-		}
-	}
+	return(file);
 }

@@ -1,26 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exp_wand.c                                         :+:      :+:    :+:   */
+/*   magic_wand.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: iadjedj <iadjedj@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/11 16:37:02 by iadjedj           #+#    #+#             */
-/*   Updated: 2015/02/16 18:00:32 by iadjedj          ###   ########.fr       */
+/*   Updated: 2015/02/17 12:33:17 by iadjedj          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "image.h"
 
-/* En cours de dev : algo de remplacement par zone et non lineaire					*/
-/* Utilisation : A lancer avec une position de depart et la taille totale de data	*/
-/* 	size = glitch.header.width * glitch.header.height * 3							*/
 /*
 d=sqrt((r2-r1)^2+(g2-g1)^2+(b2-b1)^2)
 p= 100 * d/sqrt((255)^2+(255)^2+(255)^2)
 */
 
-int				get_diff(t_glitch *glitch, int x, int y, t_rgb *comp)
+static int		get_diff(t_glitch *glitch, int x, int y, const t_rgb *comp)
 {
 	unsigned char *data;
 	int distance;
@@ -37,10 +34,10 @@ int				get_diff(t_glitch *glitch, int x, int y, t_rgb *comp)
 	return (percent);
 }
 
-void			recurs_wand(t_glitch *glitch, const int x, const int y, const int size, t_rgb *start)
+static void		recurs_wand(t_glitch *glitch, const int x, const int y, const t_rgb *start, const int accuracy)
 {
 	if (y < 0 || x < 0 || y + 1 > glitch->header.height || x + 1 > glitch->header.width ||
-		get_diff(glitch, x, y, start) > 10 ||
+		get_diff(glitch, x, y, start) > accuracy ||
 		(glitch->copy[3 * ((y * glitch->header.width) + x)] == start->B &&
 		glitch->copy[3 * ((y * glitch->header.width) + x) + 1] == start->G &&
 		glitch->copy[3 * ((y * glitch->header.width) + x) + 2] == start->R))
@@ -50,34 +47,33 @@ void			recurs_wand(t_glitch *glitch, const int x, const int y, const int size, t
 	glitch->copy[3 * ((y * glitch->header.width) + x) + 0] = start->B;
 	glitch->copy[3 * ((y * glitch->header.width) + x) + 1] = start->G;
 	glitch->copy[3 * ((y * glitch->header.width) + x) + 2] = start->R;
-	recurs_wand(glitch, x, y + 1, size, start);
-	recurs_wand(glitch, x, y - 1, size, start);
-	recurs_wand(glitch, x + 1, y, size, start);
-	recurs_wand(glitch, x - 1, y, size, start);
+	recurs_wand(glitch, x, y + 1, start, accuracy);
+	recurs_wand(glitch, x, y - 1, start, accuracy);
+	recurs_wand(glitch, x + 1, y, start, accuracy);
+	recurs_wand(glitch, x - 1, y, start, accuracy);
 }
 
-void		*launch_recurs(void *input)
+static void		*launch_recurs(void *input)
 {
 	t_glitch *glitch;
 	int x;
 	int y;
-	int size;
 	t_rgb *start;
 	t_thread *data;
+	int accuracy;
 
 	data = (t_thread*)input;
 	glitch = data->glitch;
 	x = data->x;
 	y = data->y;
-	size = data->size;
 	start = data->start;
-	recurs_wand(glitch, x, y, size, start);
+	accuracy = data->accuracy;
+	recurs_wand(glitch, x, y, start, accuracy);
 	pthread_exit(NULL);
 }
 
-void			ft_wand(t_glitch glitch, int x, int y)
+void			magic_wand(t_glitch glitch, int x, int y, int accuracy)
 {
-	int				size;
 	unsigned char	*data;
 	t_rgb			start;
 	pthread_t		threads[1];
@@ -85,7 +81,6 @@ void			ft_wand(t_glitch glitch, int x, int y)
 	int				err;
 	t_thread		p_data;
 
-	size = glitch.header.width * glitch.header.height * 3;
 	data = glitch.copy;
 	y = (glitch.negative_height == -1) ? y : glitch.header.height - 1 - y;
 	/*Le random permet a l'algo de remplacer le pixel de départ qui est du coup different de la couleur de départ*/
@@ -95,13 +90,13 @@ void			ft_wand(t_glitch glitch, int x, int y)
 	p_data.glitch = &glitch;
 	p_data.x = x;
 	p_data.y = y;
-	p_data.size = size;
 	p_data.start = &start;
+	p_data.accuracy = accuracy;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 	err = pthread_attr_setstacksize(&attr, 4096 * 10000);
 	if (err != 0)
-		printf("Error setting stacksize\n", err);
+		printf("Error setting stacksize\n");
 	err = pthread_create(&threads[0], &attr, launch_recurs, &p_data);
 	if (err != 0)
 		printf("Error creating thread\n");
